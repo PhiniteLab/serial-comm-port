@@ -6,21 +6,21 @@
     
     What can you do using this program?
     
-    - Reading serial port for a selected port name
-    - Writing the whole data that is read by the program to the text file which is named by the user
-    - Writing data to the serial port
+    * Reading serial port for a selected port name
+    * Writing the whole data that is read by the program to the text file which is named by the user
+    * Writing data to the serial port
     
     Which kinds of projects you can utilize the basis of this codes?
     
-    - Embedded software simulation
-    - Real time engine application
-    - Estimation and Control of Physical System
+    * Embedded software simulation
+    * Real time engine application
+    * Estimation and Control of Physical System
 
     How can you use the library?
     
-    - Create the phiSerialPortParameters variable.
-    - Giving the file name related to the text files that stores the data coming from the serial port
-    - Initialize the serial port with the parameters of port name, read/write format, baudrate, byte size, stop bit and parity bit.
-    - Start serial connection by using phiStartSerialConnectin().
-    - You can use phiReadData() or phiWriteData() in order to read or write data from serial port, respectively.
+    * Create the phiSerialPortParameters variable.
+    * Giving the file name related to the text files that stores the data coming from the serial port
+    * Initialize the serial port with the parameters of port name, read/write format, baudrate, byte size, stop bit and parity bit.
+    * Start serial connection by using phiStartSerialConnectin().
+    * You can use phiReadData() or phiWriteData() in order to read or write data from serial port, respectively.
 
