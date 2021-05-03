@@ -24,3 +24,7 @@
     * Start serial connection by using phiStartSerialConnectin().
     * You can use phiReadData() or phiWriteData() in order to read or write data from serial port, respectively.
 
+For more detailed information about us,
+
+http://www.phinitelab.com/ 
+https://www.udemy.com/user/phinite-academy/
