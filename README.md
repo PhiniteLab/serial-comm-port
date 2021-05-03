@@ -1,4 +1,4 @@
-# SERIAL COMMUNICATION IN C PROGRAM
+# SERIAL COMMUNICATION IN C PROGRAMMING LANGUAGE
 
 
  Serial communication has been widely used for many applications such as data transmission, program communication and etc. However, there are main problems data transmission speed and correction of data coming from the source, especially in high level programming such as C#, python.
