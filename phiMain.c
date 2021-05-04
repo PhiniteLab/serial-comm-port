@@ -9,11 +9,24 @@ int main()
 
     phiSP.fileName = "portReading.txt";
 
-    phiSpInitialization(&phiSP, "COM3", "r", CBR_115200, 8, ONESTOPBIT, NOPARITY);
+    if(TRUE == phiSpInitialization(&phiSP, "COM3", "r", CBR_115200, 8, ONESTOPBIT, NOPARITY)){
+		if(TRUE == phiStartSerialConnection(&phiSP)){
+			if(TRUE == phiReadData(&phiSP)){
+				// success!				
+			}
+			else{
+				fprintf(stdout, "Unable to read serial port, error desc : %s\n", phiGetErrorDescription(phiSP.lastError));				
+			}
+		}
+		else{
+			 fprintf(stdout, "Unable to start serial connection, error desc : %s\n", phiGetErrorDescription(phiSP.lastError)); 
+		}
+    	
+    }
+    else{
+    	fprintf(stdout, "Error occured, desc : %s\n", phiGetErrorDescription(phiSP.lastError));
+    }
 
-    phiStartSerialConnection(&phiSP);
-
-    phiReadData(&phiSP);
 
     return 0;
 }
