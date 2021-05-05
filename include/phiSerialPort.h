@@ -23,13 +23,17 @@ extern "C"
     ////////////////////////////////////////////////////////////
     // define error types
 
-#define ERROR_OPEN_FILE_FORMAT 0
-#define COM_GET_DCB_ERROR 1
-#define COM_GET_DCB_ASSIGNING_ERROR 2
-#define COM_TIME_OUT_ERROR 3
-#define ERROR_SET_COMM_MASK 4
-#define ERROR_WAIT_COMM_MASK 5
-#define ERROR_WRITE_DATA 6
+typedef enum{
+	PHI_OK = 0,
+	ERROR_OPEN_FILE_FORMAT,
+	COM_GET_DCB_ERROR,
+	COM_GET_DCB_ASSIGNING_ERROR,
+	COM_TIME_OUT_ERROR,
+	ERROR_SET_COMM_MASK,
+	ERROR_WAIT_COMM_MASK,
+	ERROR_WRITE_DATA,
+	COUNT
+}PHI_ERROR;
 
     // define error types
     ////////////////////////////////////////////////////////////
@@ -123,6 +127,7 @@ extern "C"
                           * storing the name of file
                           */
 
+		PHI_ERROR lastError;
         // writing text file
         //////////////////////////////////////////////////////////
 
@@ -175,7 +180,14 @@ extern "C"
     ////////////////////////////////////////////////////////////
     // error handler code
 
-    void phiErrorHandler(phiSerialPortParametersPtr ptrPSP, int errorType); /*
+    /*
+    * returns description of given error, if one is provided in table. 
+    */
+    const char* phiGetErrorDescription(PHI_ERROR errorType);
+
+
+    void phiErrorHandler(phiSerialPortParametersPtr ptrPSP, PHI_ERROR error);
+    /*
     * return error type
     * output -> return nothing
     * input -> address of phiSerialPortParametersPtr

@@ -60,11 +60,11 @@ BOOL phiSpInitialization(phiSerialPortParametersPtr ptrPSP,
         break;
 
     default:
-        phiErrorHandler(ptrPSP, ERROR_OPEN_FILE_FORMAT);
+        ptrPSP->lastError = ERROR_OPEN_FILE_FORMAT;
         break;
     }
 
-    return TRUE;
+    return (ptrPSP->lastError == PHI_OK);
 }
 
 BOOL phiStartSerialConnection(phiSerialPortParametersPtr ptrPSP)
@@ -74,15 +74,18 @@ BOOL phiStartSerialConnection(phiSerialPortParametersPtr ptrPSP)
 
     if (ptrPSP->Status == FALSE)
     {
-        phiErrorHandler(ptrPSP, ERROR_SET_COMM_MASK);
+        ptrPSP->lastError = ERROR_SET_COMM_MASK;
+        return FALSE;
     }
 
     ptrPSP->Status = WaitCommEvent(ptrPSP->phiComm, &(ptrPSP->phiDwEventMask), NULL);
-
     if (ptrPSP->Status == FALSE)
     {
-        phiErrorHandler(ptrPSP, ERROR_WAIT_COMM_MASK);
+        ptrPSP->lastError = ERROR_WAIT_COMM_MASK;
+        return FALSE;
     }
+
+	return TRUE;
 }
 
 BOOL phiReadData(phiSerialPortParametersPtr ptrPSP)
@@ -146,8 +149,9 @@ BOOL phiWriteData(phiSerialPortParametersPtr ptrPSP)
 
     if (ptrPSP->Status == FALSE)
     {
-        phiErrorHandler(ptrPSP, ERROR_WRITE_DATA);
+        ptrPSP->lastError = ERROR_WRITE_DATA;
     }
+    return (ptrPSP->lastError == PHI_OK);
 }
 
 /////////////////////////////////////////////////////////
@@ -217,7 +221,8 @@ BOOL phiDCBSerialParameterSettings(phiSerialPortParametersPtr ptrPSP,
 
     if (ptrPSP->Status == FALSE)
     {
-        phiErrorHandler(ptrPSP, COM_GET_DCB_ERROR);
+        ptrPSP->lastError = COM_GET_DCB_ERROR;
+    	return FALSE;
     }
 
     // assigning the dcb serial parameters
@@ -232,10 +237,10 @@ BOOL phiDCBSerialParameterSettings(phiSerialPortParametersPtr ptrPSP,
 
     if (ptrPSP->Status == FALSE)
     {
-        phiErrorHandler(ptrPSP, COM_GET_DCB_ASSIGNING_ERROR);
+        ptrPSP->lastError = COM_GET_DCB_ASSIGNING_ERROR;
     }
 
-    return TRUE;
+    return (ptrPSP->lastError == PHI_OK);
 }
 
 BOOL phiTimeOutsParametersSettings(phiSerialPortParametersPtr ptrPSP,
@@ -255,10 +260,10 @@ BOOL phiTimeOutsParametersSettings(phiSerialPortParametersPtr ptrPSP,
 
     if (ptrPSP->Status == FALSE)
     {
-        phiErrorHandler(ptrPSP, COM_TIME_OUT_ERROR);
+		ptrPSP->lastError = COM_TIME_OUT_ERROR;
     }
 
-    return TRUE;
+    return (ptrPSP->lastError == PHI_OK);
 }
 
 void phiGeneralInitialize(phiSerialPortParametersPtr ptrPSP)
@@ -278,48 +283,43 @@ void phiGeneralInitialize(phiSerialPortParametersPtr ptrPSP)
 //////////////////////////////////////////////////////////////////
 // error handler code
 
-void phiErrorHandler(phiSerialPortParametersPtr ptrPSP, int errorType)
-{
-    switch (errorType)
+// 
+
+
+const char* phiGetErrorDescription(PHI_ERROR errorType){
+	switch (errorType)
     {
     case ERROR_OPEN_FILE_FORMAT:
-        printf("File format is wrong to connect serial port. Please select -r- or -w- !!\n");
-        exit(EXIT_FAILURE);
-        break;
-
+        return "File format is wrong to connect serial port. Please select -r- or -w- !!";
     case COM_GET_DCB_ERROR:
-        printf("Communication settings state on DCB cannot be assigned!\n\n");
-        CloseHandle(ptrPSP->phiComm);
-        exit(EXIT_FAILURE);
-        break;
+        return "Communication settings state on DCB cannot be assigned!";
     case COM_GET_DCB_ASSIGNING_ERROR:
-        printf("Serial Port Setting cannot get its states!\n\n");
-        CloseHandle(ptrPSP->phiComm);
-        exit(EXIT_FAILURE);
-        break;
+        return "Serial Port Setting cannot get its states!";
     case COM_TIME_OUT_ERROR:
-        printf("Serial Port Time out Setting cannot be done!\n\n");
-        CloseHandle(ptrPSP->phiComm);
-        exit(EXIT_FAILURE);
-        break;
+        return "Serial Port Time out Setting cannot be done!";
     case ERROR_WAIT_COMM_MASK:
-        printf("Serial Port Wait port setting cannot be done!\n\n");
-        CloseHandle(ptrPSP->phiComm);
-        exit(EXIT_FAILURE);
-        break;
+        return "Serial Port Wait port setting cannot be done!";
     case ERROR_SET_COMM_MASK:
-        printf("Serial Port Mask Setting cannot be done!\n\n");
-        CloseHandle(ptrPSP->phiComm);
-        exit(EXIT_FAILURE);
-        break;
+        return "Serial Port Mask Setting cannot be done!";
     case ERROR_WRITE_DATA:
-        printf("Program cannot write the data to the port!\n\n");
-        CloseHandle(ptrPSP->phiComm);
-        exit(EXIT_FAILURE);
-
+        return "Program cannot write the data to the port!";
     default:
-        break;
+    	return "Error code doesn't have associated description!";
     }
+       
+    return "FATAL: That value must be inaccessible";
+}
+
+void phiErrorHandler(phiSerialPortParametersPtr ptrPSP, PHI_ERROR error)
+{		 
+	if(error == PHI_OK){
+		// not an error, early termination.
+		return;	
+	}
+
+	fprintf(stderr, "%s", phiGetErrorDescription(error));
+	// optional, not suggested tho.
+	// CloseHandle(ptrPSP->phiComm);
 }
 
 // error handler code
